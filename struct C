@@ -1,5 +1,8 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include<iostream>
+#include<cstdio>
+#include<malloc.h>
+using namespace std;
+
 #define MAX_size 1000
 #define STACK_INIT_size 100
 #define STACK_size_increasement 10
@@ -26,8 +29,8 @@ typedef struct Sstack
 typedef struct SNode
 {
     char data;
-    SNode *next;    
-}SNode;//定义链栈
+    struct SNode *next;    
+}SstackLink_Node;//定义链栈
 
 
 
@@ -376,6 +379,7 @@ int Pop_stack(Sqstack *s)
     if(Judeg_stackEmpty(s))
     {
         printf("ERROR!EMPTY!");
+        return 0;
     }
     else{
         return s->data[s->top--];
@@ -383,52 +387,53 @@ int Pop_stack(Sqstack *s)
 }//出栈(此时栈内仍存在已经出栈的元素)
 
 
-void Init_Sstack(Sstack *s)
+
+void Init_Sstack(Sstack &s)
 {
-    s->Sbase=(char*)malloc(STACK_INIT_size*sizeof(char*));
-    if(!s->Sbase)
+    s.Sbase=(char*)malloc(STACK_INIT_size*sizeof(char));
+    if(!s.Sbase)
     {
         printf("ERROR!");
         exit (-1); //存储分配失败
     }
-    else{
-        s->Stop=s->Sbase;
-        s->Sstack_size=STACK_INIT_size;
-    }
+    s.Stop=s.Sbase;
+    s.Sstack_size=STACK_INIT_size;
 }//初始化一个空栈
-void Push_Sstack(Sstack *s,char x)
+
+
+void Push_Sstack(Sstack &s,char x)
 {
-    if((s->Stop-s->Sbase)>=STACK_INIT_size)//如果满栈则增加储存空间
+    if((s.Stop-s.Sbase)>=STACK_INIT_size)//如果满栈则增加储存空间
     {
         printf("INCREASE THE SIZE!");
-        s->Sbase=(char*)realloc(s->Sbase,(STACK_INIT_size+STACK_size_increasement)*sizeof(char*));
-        if(!s->Sbase) exit (-1); //存储分配失败则退出
-        s->Stop=s->Sbase+s->Sstack_size;
-        s->Sstack_size=s->Sstack_size+STACK_size_increasement;
+        s.Sbase=(char*)realloc(s.Sbase,(STACK_INIT_size+STACK_size_increasement)*sizeof(char));
+        if(!s.Sbase) exit (-1); //存储分配失败则退出
+        s.Stop=s.Sbase+s.Sstack_size;
+        s.Sstack_size=s.Sstack_size+STACK_size_increasement;
     }
-    *s->Stop++=x;
+    *s.Stop++ = x;
 }//进栈
-void Destroy_Sstack(Sstack *s)
+
+void Destroy_Sstack(Sstack &s)
 {
-    if(s->Sbase)
+    if(s.Sbase)
     {
-        free(s->Sbase);
-        s->Sbase=NULL;
-        s->Stop=NULL;
-        s->Sstack_size=0;
+        free(s.Sbase);
+        s.Sbase=NULL;
+        s.Stop=NULL;
+        s.Sstack_size=0;
         printf("THE STACK IS FREE!");
     }
 }//销毁栈
-void Clear_Sstack(Sstack *s)
+
+
+void Clear_Sstack(Sstack &s)
 {
-    if(s->Sbase)
-    {
-        s->Stop=s->Sbase;
-    }
+    s.Stop=s.Sbase;
 }//清空栈，使栈底等于栈顶，有效元素为零
-int Judeg_SstackEmpty(Sstack *s)
+int Judeg_SstackEmpty(Sstack &s)
 {
-    if(s->Stop==s->Sbase)
+    if(s.Stop==s.Sbase)
     {
         return 1;
     }
@@ -436,7 +441,7 @@ int Judeg_SstackEmpty(Sstack *s)
         return 0;
     }
 }//判断栈s是否为空栈，是则返回1
-char Pop_Sstack(Sstack *s)
+char Pop_Sstack(Sstack &s)
 {
     if(Judeg_SstackEmpty(s))
     {
@@ -444,11 +449,58 @@ char Pop_Sstack(Sstack *s)
         exit(-1);
     }
     else{
-        s->Stop=s->Stop-1;
-        return *s->Stop;
+        s.Stop--;
+        return *(s.Stop);
     }
 }//出栈
+int Get_top(Sstack &s)
+{
+    if(s.Sbase == s.Stop)
+        return 0;
+    return *(s.Stop-1);
+}//得到最上方元素
+int Length_Sstack(Sstack &s)
+{
+    return s.Stop-s.Sbase;
+}//返回这个栈的长度
+
+
+void TEN_to_EIGHT()
+{
+    Sstack s;
+    int N;
+    char e;
+    Init_Sstack(s);
+    printf("Please input N(ten).");
+    scanf("%d",&N);
+    while(N){
+        Push_Sstack(s,(char)(N%8));
+        N=N/8;
+    }//余数入栈
+    while(!Judeg_SstackEmpty(s)){
+        e=Pop_Sstack(s);
+        printf("%d",(int)e);
+    }
+}//将十进制转换为八进制
+
 int main()
 {
-
+    Sstack s;
+    Init_Sstack(s);
+    for(int i=0;i<10;i++)
+        Push_Sstack(s, i);
+    for(int i=0;i<10;i++)
+    {
+        int a = Get_top(s);
+        printf("%d  ", a);
+        Pop_Sstack(s);
+    }
+    printf("\n");
+    if(Judeg_SstackEmpty(s) == 1)
+        printf("不为空\n");
+    int len = Length_Sstack(s);
+    printf("%d\n", len);
+    Destroy_Sstack(s);
+    TEN_to_EIGHT();
+    return 0;
 }
