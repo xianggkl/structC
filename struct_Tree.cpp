@@ -19,6 +19,8 @@ typedef struct Queue
     Qnode *front;
     Qnode *rear;
 }Queue;
+
+
 void Init_Queue(Queue& Q)
 {
     Q.front=Q.rear=(Qnode*)malloc(sizeof(Qnode));
@@ -122,7 +124,8 @@ void travel_MidOrder(BinTree *t)
         printf("%c",t->data);
         travel_MidOrder(t->rch);
     }
-}//中序遍历二叉树
+}//中序遍历二叉树（递归算法）
+
 void travel_PostOrder(BinTree *t)
 {
     if(t)
@@ -249,6 +252,48 @@ void Exchange_Lnode_Rnode(BinTree *t)
         Exchange_Lnode_Rnode(t->rch);
     }
 }//交换左右结点
+int Get_BinTree_depth(BinTree *t)
+{
+    if(t==NULL)
+    {
+        return 0;
+    }
+    else{
+        return MAX(Get_BinTree_depth(t->lch),Get_BinTree_depth(t->rch))+1;
+    }
+}//得到二叉树的深度
 
+int Find_BinTree_EQUAL(BinTree *t1,BinTree *t2)
+{
+    int find=0;
+    if(t1==NULL&&t2==NULL)
+    {
+        find=1;
+        return find;
+    }
+    else{
+        if(t1->data==t2->data)
+        {
+            if(Find_BinTree_EQUAL(t1->lch,t2->rch))
+            {
+                find=1;
+            }
+        }
+        return find;
+    }
+}
 
-
+BinTree* Copy_BinTree(BinTree *t)
+{
+    if(t==NULL){
+        return NULL;
+    }
+    else{
+        BinTree *temp;
+        Init_BinTree(&temp);
+        temp->data=t->data;
+        temp->lch=Copy_BinTree(t->lch);
+        temp->rch=Copy_BinTree(t->rch);
+        return temp;
+    }
+}//复制二叉树，返回值为新树的根节点
